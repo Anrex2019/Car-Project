@@ -101,7 +101,48 @@ select * from layoffs_staging2;
 Alter table layoffs_staging2 drop column row_num;
 select * from layoffs_staging2;
 
+-- Explratory Data Analysis (EDA)
+select * from layoffs_staging2;
+-- Most total laid off and the highest percentage laid offf. 
+select MAX(total_laid_off), MAX(percentage_laid_off) from layoffs_staging2;
+-- Order by most total laid off whilst having 100% laid off
+select * from layoffs_staging2 where percentage_laid_off = 1 order by total_laid_off desc;
+-- Order by funds raised millions whilst having 100% laid off
+select * from layoffs_staging2 where percentage_laid_off = 1 order by funds_raised_millions desc;
+-- Create 2 coloumns with company and the sum of total laid per company. Number 2 orders it by the second column. 
+Select company, Sum(total_laid_off)
+from layoffs_staging2 group by company order by 2 desc;
+-- Show case the earliest and latest date
+select min(date), max(date) from layoffs_staging2;
+-- What industry got hit the most with the most layoffs in this data set.
+Select industry, Sum(total_laid_off)
+from layoffs_staging2 group by industry order by 2 desc;
+-- What country got hit the most with the most layoffs in this dataset.
+Select country, Sum(total_laid_off)
+from layoffs_staging2 group by country order by 2 desc;
+-- Show what year got hit with the most layoffs in this data set
+Select YEAR(date), Sum(total_laid_off)
+from layoffs_staging2 group by YEAR(date) order by 2 desc;
+-- Show what the sum of total_laid_off per month in year
+select substring(date,1,7) as 'Month', SUM(total_laid_off) FROM layoffs_staging2 where Substring(date,1,7)  is not NULL
+GROUP BY substring(date,1,7) ORDER BY 1 ASC;
+-- Rolling Total of Layoffs Per Month
+SELECT SUBSTRING(date,1,7) as dates, SUM(total_laid_off) AS total_laid_off
+FROM layoffs_staging2
+GROUP BY dates
+ORDER BY dates ASC;
 
+-- now use it in a CTE so we can query off of it
+WITH DATE_CTE AS 
+(
+SELECT SUBSTRING(date,1,7) as dates, SUM(total_laid_off) AS total_laid_off
+FROM layoffs_staging2
+GROUP BY dates
+ORDER BY dates ASC
+)
+SELECT dates, total_laid_off, SUM(total_laid_off) OVER (ORDER BY dates ASC) as rolling_total_layoffs
+FROM DATE_CTE
+ORDER BY dates ASC; 
 
 
 
