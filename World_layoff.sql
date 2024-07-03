@@ -101,7 +101,7 @@ select * from layoffs_staging2;
 Alter table layoffs_staging2 drop column row_num;
 select * from layoffs_staging2;
 
--- Explratory Data Analysis (EDA)
+-- Expolratory Data Analysis (EDA)
 select * from layoffs_staging2;
 -- Most total laid off and the highest percentage laid offf. 
 select MAX(total_laid_off), MAX(percentage_laid_off) from layoffs_staging2;
